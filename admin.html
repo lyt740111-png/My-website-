@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة الإدارة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* ── LOGIN SCREEN ── */
+    #loginScreen {
+      position: fixed; inset: 0; z-index: 500;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .login-box {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--r2); padding: 44px 40px;
+      text-align: center; width: 360px;
+    }
+    .login-box .logo { font-size: 2.5rem; margin-bottom: 16px; }
+    .login-box h2   { font-size: 1.3rem; font-weight: 900; margin-bottom: 6px; }
+    .login-box p    { color: var(--muted); font-size: .86rem; margin-bottom: 28px; }
+    .login-box input {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 16px; color: var(--text); font-size: .9rem;
+      outline: none; text-align: center; font-family: var(--f-mono); margin-bottom: 14px;
+      transition: border-color .2s;
+    }
+    .login-box input:focus { border-color: var(--acc); }
+    .login-err { color: var(--acc3); font-size: .82rem; margin-bottom: 12px; display: none; }
+
+    /* ── ADMIN LAYOUT ── */
+    .admin-wrap {
+      max-width: 1100px; margin: 0 auto;
+      padding: 90px clamp(16px,4vw,40px) 80px;
+    }
+    .admin-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 36px; flex-wrap: wrap; gap: 14px;
+    }
+    .admin-title { font-size: 1.6rem; font-weight: 900; }
+    .admin-title span { color: var(--acc); }
+
+    /* ── TABS ── */
+    .tabs { display: flex; gap: 6px; margin-bottom: 28px; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 9px 22px; border-radius: 8px;
+      border: 1px solid var(--border); background: none;
+      color: var(--muted); font-size: .86rem; cursor: pointer; transition: .2s;
+    }
+    .tab-btn.active { background: rgba(0,240,168,.1); border-color: var(--acc); color: var(--acc); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── FORM CARD ── */
+    .form-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--r2); padding: 30px;
+    }
+    .form-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+    }
+    @media(max-width:680px){ .form-grid { grid-template-columns:1fr; } }
+    .form-full { grid-column: 1 / -1; }
+
+    .f-group { display: flex; flex-direction: column; gap: 6px; }
+    .f-label {
+      font-size: .78rem; color: var(--acc); font-family: var(--f-mono);
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+    .f-label .req { color: var(--acc3); }
+    .f-input, .f-textarea, .f-select {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 9px; padding: 11px 15px; color: var(--text);
+      font-size: .88rem; outline: none; transition: border-color .2s;
+    }
+    .f-input:focus, .f-textarea:focus, .f-select:focus { border-color: var(--acc); }
+    .f-textarea { min-height: 130px; resize: vertical; }
+    .f-hint { font-size: .73rem; color: var(--muted); }
+
+    /* checkbox platform */
+    .platform-checks { display: flex; gap: 12px; flex-wrap: wrap; }
+    .plat-label {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 14px; cursor: pointer;
+      font-size: .84rem; transition: .2s;
+    }
+    .plat-label:has(input:checked),
+    .plat-label.checked { border-color: var(--acc); background: rgba(0,240,168,.08); color: var(--acc); }
+    .plat-label input { display: none; }
+
+    /* ── CODE OUTPUT ── */
+    .code-box {
+      position: relative; margin-top: 24px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--r); overflow: hidden;
+    }
+    .code-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 16px; background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+      font-size: .78rem; color: var(--muted); font-family: var(--f-mono);
+    }
+    .copy-code-btn {
+      background: var(--acc); color: var(--bg);
+      border: none; border-radius: 6px; padding: 4px 14px;
+      font-size: .76rem; font-weight: 700; cursor: pointer;
+    }
+    .code-pre {
+      padding: 20px; overflow-x: auto;
+      font-family: var(--f-mono); font-size: .8rem;
+      color: var(--acc2); line-height: 1.7;
+      max-height: 360px; overflow-y: auto;
+      white-space: pre;
+    }
+
+    /* ── GAMES LIST (manage tab) ── */
+    .games-list { display: flex; flex-direction: column; gap: 14px; }
+    .gl-item {
+      display: flex; align-items: center; gap: 16px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 14px 18px;
+    }
+    .gl-item img { width: 80px; height: 50px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+    .gl-info { flex: 1; }
+    .gl-title { font-weight: 700; font-size: .95rem; margin-bottom: 3px; }
+    .gl-meta  { font-size: .75rem; color: var(--muted); font-family: var(--f-mono); }
+    .gl-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+    /* ── SITE CONFIG TAB ── */
+    .config-save-note {
+      background: rgba(0,240,168,.06); border: 1px solid rgba(0,240,168,.2);
+      border-radius: 10px; padding: 14px 18px;
+      font-size: .84rem; color: var(--muted); margin-bottom: 22px;
+    }
+    .config-save-note strong { color: var(--acc); }
+
+    /* ── ALERT ── */
+    .alert {
+      padding: 14px 18px; border-radius: 10px; margin-bottom: 18px;
+      font-size: .88rem; display: none;
+    }
+    .alert-success { background: rgba(0,240,168,.1); border: 1px solid rgba(0,240,168,.3); color: var(--acc); }
+    .alert-error   { background: rgba(255,77,109,.1); border: 1px solid rgba(255,77,109,.3); color: var(--acc3); }
+    .alert.show { display: block; }
+  </style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<!-- ░░░ LOGIN ░░░ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="logo">🔐</div>
+    <h2>لوحة الإدارة</h2>
+    <p>أدخل كلمة المرور للدخول</p>
+    <input type="password" id="pwInput" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter')tryLogin()" />
+    <div class="login-err" id="loginErr">❌ كلمة مرور خاطئة</div>
+    <button class="btn btn-green btn-full" onclick="tryLogin()">دخول →</button>
+    <p style="margin-top:16px;font-size:.76rem;color:var(--muted)">
+      كلمة المرور الافتراضية: <code style="color:var(--acc)">admin123</code><br/>
+      غيّرها في ملف admin.html
+    </p>
+  </div>
+</div>
+
+<!-- ░░░ NAVBAR ░░░ -->
+<nav class="navbar">
+  <div class="nav-logo">🔧 <span>الإدارة</span></div>
+  <ul class="nav-center">
+    <li><a href="index.html">← الموقع</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="nav-icon" onclick="logout()" title="خروج">🚪</button>
+  </div>
+</nav>
+
+<div class="page" id="adminPage" style="display:none">
+<div class="admin-wrap">
+
+  <div class="admin-header">
+    <div>
+      <div class="admin-title">لوحة <span>الإدارة</span></div>
+      <div style="font-size:.84rem;color:var(--muted);font-family:var(--f-mono);margin-top:4px">
+        إدارة الألعاب والمحتوى
+      </div>
+    </div>
+    <a href="index.html" class="btn btn-outline">🌐 عرض الموقع</a>
+  </div>
+
+  <!-- STATS -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:32px" id="statsRow"></div>
+
+  <div id="alertBox" class="alert"></div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('add',this)">➕ إضافة لعبة</button>
+    <button class="tab-btn"        onclick="switchTab('list',this)">📋 قائمة الألعاب</button>
+    <button class="tab-btn"        onclick="switchTab('config',this)">⚙️ إعدادات الموقع</button>
+    <button class="tab-btn"        onclick="switchTab('help',this)">📖 دليل الاستخدام</button>
+  </div>
+
+  <!-- ═══ TAB: ADD GAME ═══ -->
+  <div class="tab-panel active" id="tab-add">
+    <div class="form-card">
+      <h3 style="font-size:1.1rem;font-weight:800;margin-bottom:22px;color:var(--acc)">➕ إضافة لعبة جديدة</h3>
+
+      <form id="addGameForm">
+        <div class="form-grid">
+
+          <div class="f-group">
+            <label class="f-label">عنوان اللعبة <span class="req">*</span></label>
+            <input class="f-input" id="f-title" type="text" placeholder="مثال: Minecraft" required />
+          </div>
+
+          <div class="f-group">
+            <label class="f-label">الفئة <span class="req">*</span></label>
+            <select class="f-select" id="f-cat">
+              <option value="action">⚔️ أكشن</option>
+              <option value="adventure">🗺 مغامرة</option>
+              <option value="puzzle">🧩 ألغاز</option>
+              <option value="rpg">🧙 RPG</option>
+              <option value="sport">⚽ رياضة</option>
+              <option value="other">🎯 أخرى</option>
+            </select>
+          </div>
+
+          <div class="f-group form-full">
+            <label class="f-label">الوصف المختصر <span class="req">*</span> <span class="f-hint">(يظهر في الكارد - جملة أو جملتين)</span></label>
+            <input class="f-input" id="f-short" type="text" placeholder="مثال: لعبة بناء مفتوحة العالم رائعة..." required />
+          </div>
+
+          <div class="f-group form-full">
+            <label class="f-label">الشرح الكامل <span class="req">*</span> <span class="f-hint">(يمكن استخدام HTML مثل &lt;p&gt; &lt;ul&gt; &lt;strong&gt;)</span></label>
+            <textarea class="f-textarea" id="f-desc" placeholder="<p>اكتب الشرح التفصيلي هنا...</p>
+<p>يمكنك إضافة فقرات متعددة</p>
+<ul>
+  <li>ميزة ١</li>
+  <li>ميزة ٢</li>
+</ul>" required style="min-height:180px"></textarea>
+          </div>
+
+          <div class="f-group form-full">
+            <label class="f-label">رابط صورة الغلاف <span class="req">*</span> <span class="f-hint">(رابط مباشر لصورة JPG/PNG)</span></label>
+            <input class="f-input" id="f-img" type="url" placeholder="https://example.com/image.jpg" required />
+            <div id="imgPreview" style="margin-top:8px;display:none">
+              <img id="prevImg" style="max-height:120px;border-radius:8px;border:1px solid var(--border)" />
+            </div>
+          </div>
+
+          <div class="f-group form-full">
+            <label class="f-label">صور إضافية (Screenshots) <span class="f-hint">— روابط مفصولة بفاصلة , (اختياري)</span></label>
+            <input class="f-input" id="f-screens" type="text" placeholder="https://img1.jpg, https://img2.jpg, https://img3.jpg" />
+          </div>
+
+          <div class="f-group">
+            <label class="f-label">رابط التحميل <span class="req">*</span> <span class="f-hint">(MediaFire / Google Drive)</span></label>
+            <input class="f-input" id="f-dl" type="url" placeholder="https://www.mediafire.com/file/..." required />
+          </div>
+
+          <div class="f-group">
+            <label class="f-label">رابط الإعلان <span class="f-hint">(اختياري - Linkvertise / AdFly...)</span></label>
+            <input class="f-input" id="f-ad" type="url" placeholder="https://linkvertise.com/..." />
+            <span class="f-hint">يُفتح في تاب جديد قبل التحميل الفعلي</span>
+          </div>
+
+          <div class="f-group">
+            <label class="f-label">حجم الملف</label>
+            <input class="f-input" id="f-size" type="text" placeholder="مثال: 500 MB أو 2.1 GB" />
+          </div>
+
+          <div class="f-group">
+            <label class="f-label">رقم الإصدار</label>
+            <input class="f-input" id="f-ver" type="text" placeholder="مثال: 1.0.0" value="1.0.0" />
+          </div>
+
+          <div class="f-group form-full">
+            <label class="f-label">المنصة / الأجهزة المدعومة</label>
+            <div class="platform-checks" id="platChecks">
+              <label class="plat-label"><input type="checkbox" value="PC" onchange="togglePlat(this)">💻 PC</label>
+              <label class="plat-label"><input type="checkbox" value="Android" onchange="togglePlat(this)">📱 Android</label>
+              <label class="plat-label"><input type="checkbox" value="iOS" onchange="togglePlat(this)">🍎 iOS</label>
+              <label class="plat-label"><input type="checkbox" value="Web" onchange="togglePlat(this)">🌐 Web</label>
+            </div>
+          </div>
+
+          <div class="f-group">
+            <label class="f-label" style="display:flex;align-items:center;gap:10px;cursor:pointer">
+              <input type="checkbox" id="f-featured" style="width:16px;height:16px;accent-color:var(--acc)" />
+              ⭐ لعبة مميزة (تظهر في الأعلى)
+            </label>
+          </div>
+
+        </div><!-- /form-grid -->
+
+        <div style="display:flex;gap:12px;margin-top:26px;flex-wrap:wrap">
+          <button type="submit" class="btn btn-green">⚡ توليد الكود</button>
+          <button type="button" class="btn btn-outline" onclick="clearForm()">🗑 مسح الحقول</button>
+        </div>
+      </form>
+
+      <!-- CODE OUTPUT -->
+      <div id="codeOutput" style="display:none">
+        <div style="margin:28px 0 12px;font-weight:800;color:var(--acc)">
+          ✅ الكود جاهز! انسخه وأضفه إلى ملف <code style="font-family:var(--f-mono)">games.js</code>
+        </div>
+        <div class="code-box">
+          <div class="code-bar">
+            <span>// أضف هذا الكود داخل مصفوفة GAMES في games.js</span>
+            <button class="copy-code-btn" onclick="copyCode()">نسخ الكود</button>
+          </div>
+          <pre class="code-pre" id="codeContent"></pre>
+        </div>
+        <div style="background:rgba(255,195,0,.06);border:1px solid rgba(255,195,0,.2);border-radius:10px;padding:14px 18px;margin-top:14px;font-size:.84rem;color:#ffc300">
+          ⚠️ <strong>تذكر:</strong> بعد نسخ الكود، افتح ملف <code>games.js</code> وأضفه داخل مصفوفة GAMES، ثم ارفع الملف المحدّث إلى GitHub.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ TAB: GAME LIST ═══ -->
+  <div class="tab-panel" id="tab-list">
+    <div class="form-card">
+      <h3 style="font-size:1.1rem;font-weight:800;margin-bottom:20px;color:var(--acc)">📋 الألعاب الحالية</h3>
+      <div class="games-list" id="gamesList"></div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: CONFIG ═══ -->
+  <div class="tab-panel" id="tab-config">
+    <div class="form-card">
+      <h3 style="font-size:1.1rem;font-weight:800;margin-bottom:16px;color:var(--acc)">⚙️ إعدادات الموقع</h3>
+      <div class="config-save-note">
+        💡 بعد تعديل الإعدادات، اضغط "توليد الكود" وانسخه إلى بداية ملف <strong>games.js</strong> لاستبدال كائن <strong>SITE</strong>.
+      </div>
+      <div class="form-grid">
+        <div class="f-group">
+          <label class="f-label">اسم الموقع</label>
+          <input class="f-input" id="cfg-name" value="" placeholder="مثال: موقع أبو سعد للألعاب" />
+        </div>
+        <div class="f-group">
+          <label class="f-label">الشعار (emoji أو نص)</label>
+          <input class="f-input" id="cfg-logo" value="" placeholder="🎮" />
+        </div>
+        <div class="f-group form-full">
+          <label class="f-label">وصف الموقع</label>
+          <input class="f-input" id="cfg-desc" value="" placeholder="موقعي للألعاب والتطبيقات المجانية" />
+        </div>
+        <div class="f-group">
+          <label class="f-label">رابط TikTok</label>
+          <input class="f-input" id="cfg-tiktok" value="" placeholder="https://tiktok.com/@username" />
+        </div>
+        <div class="f-group">
+          <label class="f-label">رابط YouTube</label>
+          <input class="f-input" id="cfg-yt" value="" placeholder="https://youtube.com/@channel" />
+        </div>
+        <div class="f-group">
+          <label class="f-label">رابط Discord</label>
+          <input class="f-input" id="cfg-discord" value="" placeholder="https://discord.gg/XXXXX" />
+        </div>
+        <div class="f-group">
+          <label class="f-label">رابط Twitter/X</label>
+          <input class="f-input" id="cfg-twitter" value="" placeholder="https://twitter.com/username" />
+        </div>
+        <div class="f-group">
+          <label class="f-label">معرّف AdSense (ca-pub-...)</label>
+          <input class="f-input" id="cfg-ads" value="" placeholder="ca-pub-XXXXXXXXXXXXXXXX" />
+        </div>
+      </div>
+      <button class="btn btn-green" style="margin-top:22px" onclick="genConfigCode()">⚡ توليد كود الإعدادات</button>
+      <div id="configOutput" style="display:none;margin-top:18px">
+        <div class="code-box">
+          <div class="code-bar"><span>// استبدل كائن SITE في games.js بهذا الكود</span><button class="copy-code-btn" onclick="copyConfigCode()">نسخ</button></div>
+          <pre class="code-pre" id="configCode"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: HELP ═══ -->
+  <div class="tab-panel" id="tab-help">
+    <div class="form-card">
+      <h3 style="font-size:1.1rem;font-weight:800;margin-bottom:20px;color:var(--acc)">📖 دليل إضافة الألعاب</h3>
+
+      <div style="display:flex;flex-direction:column;gap:22px">
+
+        <div style="background:var(--bg3);border-radius:var(--r);padding:20px">
+          <div style="font-weight:800;margin-bottom:10px;font-size:1rem">1️⃣ رابط صورة الغلاف</div>
+          <p style="color:var(--muted);font-size:.88rem;line-height:1.8">
+            يجب أن يكون رابطاً مباشراً للصورة (ينتهي بـ .jpg أو .png).<br/>
+            يمكنك رفع الصورة على <a href="https://imgur.com" target="_blank" style="color:var(--acc)">Imgur</a> أو
+            <a href="https://postimages.org" target="_blank" style="color:var(--acc)">PostImages</a> ثم نسخ الرابط المباشر.
+          </p>
+        </div>
+
+        <div style="background:var(--bg3);border-radius:var(--r);padding:20px">
+          <div style="font-weight:800;margin-bottom:10px;font-size:1rem">2️⃣ رابط التحميل</div>
+          <p style="color:var(--muted);font-size:.88rem;line-height:1.8">
+            ارفع ملف اللعبة على <a href="https://mediafire.com" target="_blank" style="color:var(--acc)">MediaFire</a> أو
+            <a href="https://drive.google.com" target="_blank" style="color:var(--acc)">Google Drive</a>.<br/>
+            لـ Drive: اجعل الملف "مشاركة لأي شخص لديه الرابط" وانسخ رابط المشاركة.
+          </p>
+        </div>
+
+        <div style="background:var(--bg3);border-radius:var(--r);padding:20px">
+          <div style="font-weight:800;margin-bottom:10px;font-size:1rem">3️⃣ رابط الإعلان (اختياري)</div>
+          <p style="color:var(--muted);font-size:.88rem;line-height:1.8">
+            يمكنك استخدام <a href="https://linkvertise.com" target="_blank" style="color:var(--acc)">Linkvertise</a> لتحقيق ربح من التحميلات.<br/>
+            سجّل، أنشئ رابطاً يشير لرابط التحميل الفعلي، وضع رابط Linkvertise في حقل "رابط الإعلان".<br/>
+            الزائر سيضغط أولاً على رابط الإعلان، ثم يحصل على الرابط المباشر.
+          </p>
+        </div>
+
+        <div style="background:var(--bg3);border-radius:var(--r);padding:20px">
+          <div style="font-weight:800;margin-bottom:10px;font-size:1rem">4️⃣ بعد توليد الكود</div>
+          <p style="color:var(--muted);font-size:.88rem;line-height:1.8">
+            ١. انسخ الكود المُولَّد<br/>
+            ٢. افتح ملف <code style="color:var(--acc)">games.js</code> في GitHub أو محرر النصوص<br/>
+            ٣. أضف الكود داخل مصفوفة GAMES (قبل القوس الأخير <code style="color:var(--acc)">]</code>)<br/>
+            ٤. احفظ وارفع الملف — سيظهر في الموقع فوراً!
+          </p>
+        </div>
+
+        <div style="background:rgba(0,240,168,.06);border:1px solid rgba(0,240,168,.2);border-radius:var(--r);padding:20px">
+          <div style="font-weight:800;margin-bottom:10px;font-size:1rem;color:var(--acc)">💡 نصيحة — تعديل كلمة المرور</div>
+          <p style="color:var(--muted);font-size:.88rem;line-height:1.8">
+            افتح ملف <code style="color:var(--acc)">admin.html</code> وابحث عن:<br/>
+            <code style="color:var(--acc2)">const ADMIN_PASS = 'admin123';</code><br/>
+            غيّر <code>admin123</code> بكلمة مرور خاصة بك.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /admin-wrap -->
+
+<footer class="site-footer">
+  <div class="footer-logo">🔧 لوحة الإدارة</div>
+  <div class="footer-copy">© <span id="yr"></span> · إدارة الموقع</div>
+</footer>
+</div><!-- /page -->
+
+<script src="games.js"></script>
+<script>
+/* ═══════════════════════════════════
+   ← غيّر كلمة المرور هنا ↓
+   ═══════════════════════════════════ */
+const ADMIN_PASS = 'admin123';
+
+/* ── LOGIN ── */
+function tryLogin() {
+  const pw = document.getElementById('pwInput').value;
+  if (pw === ADMIN_PASS) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminPage').style.display  = 'block';
+    sessionStorage.setItem('admin_auth', '1');
+    initAdmin();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+  }
+}
+function logout() {
+  sessionStorage.removeItem('admin_auth');
+  location.reload();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem('admin_auth') === '1') {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminPage').style.display  = 'block';
+    initAdmin();
+  }
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  // Image preview
+  document.getElementById('f-img').addEventListener('input', function() {
+    const v = this.value.trim();
+    if (v) {
+      document.getElementById('prevImg').src = v;
+      document.getElementById('imgPreview').style.display = 'block';
+    } else {
+      document.getElementById('imgPreview').style.display = 'none';
+    }
+  });
+
+  // Load config values
+  document.getElementById('cfg-name').value    = SITE.name;
+  document.getElementById('cfg-logo').value    = SITE.logo;
+  document.getElementById('cfg-desc').value    = SITE.description;
+  document.getElementById('cfg-tiktok').value  = SITE.tiktok;
+  document.getElementById('cfg-yt').value      = SITE.youtube;
+  document.getElementById('cfg-discord').value = SITE.discord;
+  document.getElementById('cfg-twitter').value = SITE.twitter;
+  document.getElementById('cfg-ads').value     = SITE.adsense_client;
+});
+
+function initAdmin() {
+  renderStats();
+  renderGamesList();
+  document.getElementById('addGameForm').addEventListener('submit', generateCode);
+}
+
+/* ── STATS ── */
+function renderStats() {
+  const stats = [
+    { icon:'🎮', label:'إجمالي الألعاب',  value: GAMES.length },
+    { icon:'⭐', label:'الألعاب المميزة',  value: GAMES.filter(g=>g.featured).length },
+    { icon:'🖥',  label:'ألعاب PC',         value: GAMES.filter(g=>g.platform.includes('PC')).length },
+    { icon:'📱', label:'ألعاب Mobile',     value: GAMES.filter(g=>g.platform.includes('Android')||g.platform.includes('iOS')).length },
+  ];
+  document.getElementById('statsRow').innerHTML = stats.map(s=>`
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px">
+      <div style="font-size:1.6rem;margin-bottom:6px">${s.icon}</div>
+      <div style="font-size:1.5rem;font-weight:900;color:var(--acc);font-family:var(--f-mono)">${s.value}</div>
+      <div style="font-size:.78rem;color:var(--muted)">${s.label}</div>
+    </div>
+  `).join('');
+}
+
+/* ── TABS ── */
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'list') renderGamesList();
+}
+
+/* ── PLATFORM CHECKBOXES ── */
+function togglePlat(el) {
+  el.closest('.plat-label').classList.toggle('checked', el.checked);
+}
+
+/* ── GENERATE GAME CODE ── */
+function generateCode(e) {
+  e.preventDefault();
+
+  const title  = document.getElementById('f-title').value.trim();
+  const cat    = document.getElementById('f-cat').value;
+  const short  = document.getElementById('f-short').value.trim();
+  const desc   = document.getElementById('f-desc').value.trim();
+  const img    = document.getElementById('f-img').value.trim();
+  const screensRaw = document.getElementById('f-screens').value.trim();
+  const dl     = document.getElementById('f-dl').value.trim();
+  const adlnk  = document.getElementById('f-ad').value.trim();
+  const size   = document.getElementById('f-size').value.trim() || '???';
+  const ver    = document.getElementById('f-ver').value.trim() || '1.0.0';
+  const feat   = document.getElementById('f-featured').checked;
+  const plats  = [...document.querySelectorAll('#platChecks input:checked')].map(i=>'"'+i.value+'"');
+  const screens = screensRaw ? screensRaw.split(',').map(s=>s.trim()).filter(Boolean).map(s=>`      "${s}"`).join(',\n') : '';
+  const id     = 'game-' + Date.now();
+  const today  = new Date().toISOString().slice(0,10);
+
+  const code = `  {
+    id:          "${id}",
+    title:       "${escJs(title)}",
+    short_desc:  "${escJs(short)}",
+    description: \`
+      ${escJs(desc)}
+    \`,
+    image:        "${escJs(img)}",
+    screenshots: [
+${screens}
+    ],
+    category:     "${cat}",
+    platform:    [${plats.join(', ')}],
+    size:         "${escJs(size)}",
+    version:      "${escJs(ver)}",
+    date:         "${today}",
+    featured:     ${feat},
+    download_link: "${escJs(dl)}",
+    ad_link:      "${escJs(adlnk)}",
+  },`;
+
+  document.getElementById('codeContent').textContent = code;
+  document.getElementById('codeOutput').style.display = 'block';
+  document.getElementById('codeOutput').scrollIntoView({ behavior:'smooth' });
+  showAlert('✅ الكود تم توليده! انسخه وأضفه إلى games.js', 'success');
+}
+
+function clearForm() {
+  document.getElementById('addGameForm').reset();
+  document.querySelectorAll('.plat-label').forEach(l => l.classList.remove('checked'));
+  document.getElementById('imgPreview').style.display = 'none';
+  document.getElementById('codeOutput').style.display = 'none';
+}
+
+function copyCode() {
+  const code = document.getElementById('codeContent').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    showAlert('✅ تم نسخ الكود! الآن أضفه إلى games.js في GitHub', 'success');
+  });
+}
+
+/* ── GAMES LIST ── */
+function renderGamesList() {
+  const CAT = { action:'⚔️ أكشن', adventure:'🗺 مغامرة', puzzle:'🧩 ألغاز', rpg:'🧙 RPG', sport:'⚽ رياضة', other:'🎯 أخرى' };
+  document.getElementById('gamesList').innerHTML = GAMES.length ? GAMES.map(g=>`
+    <div class="gl-item">
+      <img src="${g.image}" alt="${g.title}" onerror="this.src='https://picsum.photos/seed/${g.id}/160/100'" />
+      <div class="gl-info">
+        <div class="gl-title">${g.title} ${g.featured?'⭐':''}</div>
+        <div class="gl-meta">${CAT[g.category]||'أخرى'} · ${g.size} · v${g.version} · ${g.platform.join('/')}</div>
+      </div>
+      <div class="gl-actions">
+        <a href="game.html?id=${g.id}" class="btn btn-outline" style="font-size:.78rem;padding:7px 14px" target="_blank">👁 عرض</a>
+        <a href="download.html?id=${g.id}" class="btn btn-outline" style="font-size:.78rem;padding:7px 14px" target="_blank">⬇ تحميل</a>
+      </div>
+    </div>
+  `).join('') : '<p style="color:var(--muted);text-align:center;padding:30px">لا توجد ألعاب في games.js بعد</p>';
+}
+
+/* ── CONFIG CODE ── */
+function genConfigCode() {
+  const code = `const SITE = {
+  name:        "${escJs(document.getElementById('cfg-name').value)}",
+  tagline:     "ألعابي وتطبيقاتي",
+  description: "${escJs(document.getElementById('cfg-desc').value)}",
+  logo:        "${escJs(document.getElementById('cfg-logo').value)}",
+  tiktok:      "${escJs(document.getElementById('cfg-tiktok').value)}",
+  youtube:     "${escJs(document.getElementById('cfg-yt').value)}",
+  discord:     "${escJs(document.getElementById('cfg-discord').value)}",
+  twitter:     "${escJs(document.getElementById('cfg-twitter').value)}",
+  adsense_client: "${escJs(document.getElementById('cfg-ads').value)}",
+  ad_slot_banner1: "XXXXXXXXXX",
+  ad_slot_banner2: "XXXXXXXXXX",
+};`;
+  document.getElementById('configCode').textContent = code;
+  document.getElementById('configOutput').style.display = 'block';
+}
+function copyConfigCode() {
+  navigator.clipboard.writeText(document.getElementById('configCode').textContent).then(()=>showAlert('✅ تم نسخ إعدادات الموقع!','success'));
+}
+
+/* ── HELPERS ── */
+function showAlert(msg, type) {
+  const el = document.getElementById('alertBox');
+  el.textContent = msg;
+  el.className   = 'alert alert-' + type + ' show';
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+function escJs(s) { return (s||'').replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$'); }
+</script>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">تفاصيل اللعبة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- ► أضف AdSense هنا
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX" crossorigin="anonymous"></script>
+  -->
+
+  <style>
+    .game-hero {
+      position: relative;
+      padding: 80px clamp(16px,5vw,80px) 50px;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .breadcrumb {
+      display: flex; align-items: center; gap: 8px;
+      font-size: .82rem; color: var(--muted);
+      font-family: var(--f-mono); margin-bottom: 28px;
+    }
+    .breadcrumb a { color: var(--acc); }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .game-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 36px;
+    }
+    @media(max-width:900px){ .game-layout { grid-template-columns: 1fr; } }
+
+    /* ── LEFT COL ── */
+    .cover-wrap {
+      border-radius: var(--r2); overflow: hidden;
+      border: 1px solid var(--border);
+      aspect-ratio: 16/9;
+      background: var(--bg3);
+      position: relative;
+    }
+    .cover-wrap img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .cover-badge {
+      position: absolute; top: 14px; right: 14px;
+      background: var(--acc); color: var(--bg);
+      padding: 4px 14px; border-radius: 6px;
+      font-size: .78rem; font-weight: 700; font-family: var(--f-mono);
+    }
+
+    /* screenshots */
+    .screenshots { display: flex; gap: 10px; margin-top: 12px; overflow-x: auto; padding-bottom: 4px; }
+    .screenshots img {
+      width: 160px; height: 90px; object-fit: cover;
+      border-radius: 8px; border: 1px solid var(--border);
+      cursor: pointer; flex-shrink: 0; transition: .2s;
+    }
+    .screenshots img:hover { border-color: var(--acc); transform: scale(1.03); }
+
+    /* description */
+    .desc-box {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--r2); padding: 28px; margin-top: 24px;
+    }
+    .desc-box h3 {
+      font-size: 1.1rem; font-weight: 800; margin-bottom: 16px;
+      padding-bottom: 12px; border-bottom: 1px solid var(--border);
+      color: var(--acc);
+    }
+    .desc-content { color: var(--muted); font-size: .93rem; line-height: 1.85; }
+    .desc-content p { margin-bottom: 12px; }
+    .desc-content ul { padding-right: 20px; margin-bottom: 12px; }
+    .desc-content li { margin-bottom: 6px; }
+    .desc-content strong { color: var(--text); }
+
+    /* ── RIGHT COL (sidebar) ── */
+    .sidebar { display: flex; flex-direction: column; gap: 18px; }
+
+    .info-box {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--r2); padding: 22px;
+    }
+    .game-title-big { font-size: 1.6rem; font-weight: 900; margin-bottom: 8px; }
+    .game-short     { color: var(--muted); font-size: .9rem; margin-bottom: 16px; }
+    .meta-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; margin: 18px 0;
+    }
+    .meta-item { display: flex; flex-direction: column; gap: 3px; }
+    .meta-label { font-size: .7rem; font-family: var(--f-mono); color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+    .meta-value { font-size: .88rem; font-weight: 700; }
+
+    .dl-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 16px; border-radius: var(--r2);
+      background: var(--acc); color: var(--bg);
+      font-size: 1.1rem; font-weight: 900;
+      border: none; cursor: pointer;
+      box-shadow: 0 0 30px rgba(0,240,168,.35);
+      transition: .25s;
+    }
+    .dl-btn:hover { transform: translateY(-3px); box-shadow: 0 0 50px rgba(0,240,168,.5); }
+
+    /* ── COMMENTS ── */
+    .comments-section {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--r2); padding: 28px; margin-top: 24px;
+    }
+    .comments-section h3 {
+      font-size: 1.1rem; font-weight: 800; margin-bottom: 20px;
+      padding-bottom: 12px; border-bottom: 1px solid var(--border);
+      color: var(--acc);
+    }
+    .comment-form { margin-bottom: 28px; }
+    .comment-form input, .comment-form textarea {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 16px; color: var(--text);
+      font-size: .88rem; outline: none; margin-bottom: 10px;
+      transition: border-color .2s;
+    }
+    .comment-form input:focus, .comment-form textarea:focus { border-color: var(--acc); }
+    .comment-form textarea { min-height: 100px; resize: vertical; }
+    .comment-form button {
+      padding: 10px 26px; background: var(--acc); color: var(--bg);
+      border: none; border-radius: 10px; font-size: .88rem; font-weight: 700;
+      cursor: pointer; transition: .2s;
+    }
+    .comment-form button:hover { opacity: .85; }
+
+    .comment-list { display: flex; flex-direction: column; gap: 16px; }
+    .comment-item {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px;
+    }
+    .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .comment-name { font-weight: 700; font-size: .9rem; }
+    .comment-date { font-size: .74rem; color: var(--muted); font-family: var(--f-mono); }
+    .comment-text { color: var(--muted); font-size: .88rem; line-height: 1.65; }
+    .comment-stars { color: var(--acc4); font-size: .9rem; margin-bottom: 6px; }
+    .no-comments { text-align: center; color: var(--muted); padding: 30px; font-size: .9rem; }
+
+    /* ── LIGHTBOX ── */
+    #lightbox {
+      display: none; position: fixed; inset: 0; z-index: 999;
+      background: rgba(6,10,15,.95);
+      align-items: center; justify-content: center;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 12px; }
+    #lightbox-close {
+      position: fixed; top: 20px; left: 20px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text); font-size: 1.2rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── Other games ── */
+    .other-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 16px;
+    }
+    .other-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--r); overflow: hidden; cursor: pointer;
+      transition: .2s;
+    }
+    .other-card:hover { border-color: var(--acc); transform: translateY(-3px); }
+    .other-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+    .other-card-body { padding: 12px 14px; }
+    .other-card-title { font-size: .9rem; font-weight: 700; margin-bottom: 4px; }
+    .other-card-cat   { font-size: .72rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo" id="nav-logo">🎮 <span>Games</span></div>
+  <ul class="nav-center">
+    <li><a href="index.html">الرئيسية</a></li>
+    <li><a href="index.html#games">الألعاب</a></li>
+    <li><a href="admin.html">الإدارة</a></li>
+  </ul>
+  <div class="nav-right">
+    <a class="nav-icon" id="nav-tiktok" href="#" target="_blank">📱</a>
+    <a class="nav-icon" id="nav-discord" href="#" target="_blank">💬</a>
+  </div>
+</nav>
+
+<div class="page">
+<div class="game-hero">
+
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb">
+    <a href="index.html">الرئيسية</a>
+    <span>/</span>
+    <a href="index.html#games">الألعاب</a>
+    <span>/</span>
+    <span id="bc-title">اللعبة</span>
+  </div>
+
+  <!-- AD TOP -->
+  <div class="ad-wrap reveal" style="margin-bottom:28px">
+    <!--
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXX"
+           data-ad-slot="XXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    -->
+    <div class="ad-placeholder">📢 إعلان — Banner Ad</div>
+  </div>
+
+  <div class="game-layout">
+
+    <!-- LEFT -->
+    <div>
+      <div class="cover-wrap reveal">
+        <img id="coverImg" src="" alt="غلاف اللعبة" />
+        <div class="cover-badge" id="coverBadge">⭐ مميز</div>
+      </div>
+
+      <div class="screenshots" id="screenshots"></div>
+
+      <!-- DESCRIPTION -->
+      <div class="desc-box reveal">
+        <h3>📖 شرح اللعبة</h3>
+        <div class="desc-content" id="descContent">جاري التحميل...</div>
+      </div>
+
+      <!-- AD BETWEEN DESC AND COMMENTS -->
+      <div class="ad-wrap reveal" style="margin-top:22px">
+        <!--
+          <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXX"
+               data-ad-slot="XXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        -->
+        <div class="ad-placeholder">📢 إعلان — Rectangle Ad</div>
+      </div>
+
+      <!-- COMMENTS -->
+      <div class="comments-section reveal">
+        <h3>💬 التعليقات</h3>
+
+        <form class="comment-form" id="commentForm">
+          <input type="text" id="cName" placeholder="اسمك (مثال: أبو سعد)" maxlength="40" required />
+          <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
+            <span style="font-size:.84rem;color:var(--muted)">تقييمك:</span>
+            <div id="starPicker" style="display:flex;gap:4px;font-size:1.3rem">
+              <span class="star" data-v="1">☆</span>
+              <span class="star" data-v="2">☆</span>
+              <span class="star" data-v="3">☆</span>
+              <span class="star" data-v="4">☆</span>
+              <span class="star" data-v="5">☆</span>
+            </div>
+          </div>
+          <textarea id="cText" placeholder="اكتب تعليقك عن اللعبة..." maxlength="500" required></textarea>
+          <button type="submit">إرسال التعليق 💬</button>
+        </form>
+
+        <div class="comment-list" id="commentList">
+          <div class="no-comments">لا توجد تعليقات بعد — كن أول من يعلّق! 🎮</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div class="sidebar">
+
+      <div class="info-box reveal">
+        <div class="game-title-big" id="gameTitle">...</div>
+        <div class="game-short"     id="gameShort">...</div>
+
+        <div class="meta-grid" id="metaGrid"></div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px" id="platformTags"></div>
+
+        <button class="dl-btn" id="dlBtn" onclick="goDownload()">
+          ⬇ تحميل اللعبة
+        </button>
+        <p style="text-align:center;font-size:.74rem;color:var(--muted);margin-top:10px">
+          ✅ رابط مباشر — MediaFire / Google Drive
+        </p>
+      </div>
+
+      <!-- SIDEBAR AD -->
+      <div class="ad-wrap reveal">
+        <!--
+          <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px"
+               data-ad-client="ca-pub-XXX" data-ad-slot="XXX"></ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        -->
+        <div class="ad-placeholder" style="height:250px;flex-direction:column">
+          <span>📢</span><span>إعلان 300×250</span>
+        </div>
+      </div>
+
+      <!-- SHARE -->
+      <div class="info-box reveal">
+        <div style="font-weight:800;margin-bottom:14px;font-size:.95rem">📤 شارك اللعبة</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-outline" style="flex:1;font-size:.82rem" onclick="shareGame('twitter')">𝕏 تويتر</button>
+          <button class="btn btn-outline" style="flex:1;font-size:.82rem" onclick="shareGame('whatsapp')">💚 واتساب</button>
+          <button class="btn btn-outline" style="flex:1;font-size:.82rem;width:100%" onclick="copyLink()">🔗 نسخ الرابط</button>
+        </div>
+      </div>
+
+      <!-- OTHER GAMES -->
+      <div class="info-box reveal">
+        <div style="font-weight:800;margin-bottom:14px;font-size:.95rem">🎮 ألعاب أخرى</div>
+        <div id="otherGames" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+
+    </div><!-- /sidebar -->
+  </div><!-- /game-layout -->
+</div><!-- /game-hero -->
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-logo" id="footer-logo">🎮 Games</div>
+  <div class="footer-links"><a href="index.html">الرئيسية</a></div>
+  <div class="footer-copy">© <span id="yr"></span> · <span id="site-name-footer"></span></div>
+</footer>
+</div><!-- /page -->
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="" />
+</div>
+
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script src="games.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const gameId = params.get('id');
+let   game   = null;
+let   starVal = 0;
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  document.getElementById('nav-logo').innerHTML = SITE.logo + ' <span>' + SITE.name + '</span>';
+  document.getElementById('footer-logo').textContent = SITE.logo + ' ' + SITE.name;
+  document.getElementById('site-name-footer').textContent = SITE.name;
+  document.getElementById('nav-tiktok').href  = SITE.tiktok;
+  document.getElementById('nav-discord').href = SITE.discord;
+
+  game = getGame(gameId);
+  if (!game) { document.body.innerHTML = '<div style="text-align:center;padding:100px 20px;color:#6a7f98"><h2>❌ اللعبة غير موجودة</h2><a href="index.html" style="color:#00f0a8">← العودة للرئيسية</a></div>'; return; }
+
+  renderGame();
+  renderComments();
+  renderOtherGames();
+  initStars();
+
+  document.getElementById('commentForm').addEventListener('submit', submitComment);
+  window.addEventListener('scroll', () => {
+    document.getElementById('back-top').classList.toggle('show', window.scrollY > 400);
+  });
+
+  // Reveal
+  const obs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); }), {threshold:.1});
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+});
+
+function renderGame() {
+  document.getElementById('page-title').textContent = game.title + ' — ' + SITE.name;
+  document.getElementById('bc-title').textContent   = game.title;
+  document.getElementById('coverImg').src           = game.image;
+  document.getElementById('coverImg').alt           = game.title;
+  document.getElementById('coverBadge').style.display = game.featured ? '' : 'none';
+
+  document.getElementById('gameTitle').textContent = game.title;
+  document.getElementById('gameShort').textContent = game.short_desc;
+  document.getElementById('descContent').innerHTML  = game.description;
+
+  // Meta grid
+  const CAT_LABELS = { action:'⚔️ أكشن', adventure:'🗺 مغامرة', puzzle:'🧩 ألغاز', rpg:'🧙 RPG', sport:'⚽ رياضة', other:'🎯 أخرى' };
+  document.getElementById('metaGrid').innerHTML = `
+    <div class="meta-item"><span class="meta-label">الفئة</span><span class="meta-value">${CAT_LABELS[game.category]||'🎯 أخرى'}</span></div>
+    <div class="meta-item"><span class="meta-label">الحجم</span><span class="meta-value">💾 ${game.size}</span></div>
+    <div class="meta-item"><span class="meta-label">الإصدار</span><span class="meta-value">v${game.version}</span></div>
+    <div class="meta-item"><span class="meta-label">تاريخ الإضافة</span><span class="meta-value">${formatDate(game.date)}</span></div>
+  `;
+
+  // Platform tags
+  const PL = { PC:'tag-pc', Android:'tag-android', iOS:'tag-ios', Web:'tag-web' };
+  document.getElementById('platformTags').innerHTML = game.platform.map(p=>`<span class="tag ${PL[p]||'tag-other'}">${p}</span>`).join('');
+
+  // Screenshots
+  if (game.screenshots && game.screenshots.length) {
+    document.getElementById('screenshots').innerHTML = game.screenshots.map(s=>`
+      <img src="${s}" alt="screenshot" onclick="openLightbox('${s}')" />
+    `).join('');
+  }
+}
+
+function goDownload() {
+  location.href = 'download.html?id=' + game.id;
+}
+
+/* ── Comments (localStorage) ── */
+function getComments() {
+  try { return JSON.parse(localStorage.getItem('comments_' + gameId) || '[]'); } catch { return []; }
+}
+function saveComments(arr) {
+  localStorage.setItem('comments_' + gameId, JSON.stringify(arr));
+}
+
+function renderComments() {
+  const list = getComments();
+  const el   = document.getElementById('commentList');
+  if (!list.length) {
+    el.innerHTML = '<div class="no-comments">لا توجد تعليقات بعد — كن أول من يعلّق! 🎮</div>';
+    return;
+  }
+  el.innerHTML = [...list].reverse().map(c => `
+    <div class="comment-item">
+      <div class="comment-header">
+        <span class="comment-name">👤 ${escHtml(c.name)}</span>
+        <span class="comment-date">${c.date}</span>
+      </div>
+      <div class="comment-stars">${'★'.repeat(c.stars||5)}${'☆'.repeat(5-(c.stars||5))}</div>
+      <div class="comment-text">${escHtml(c.text)}</div>
+    </div>
+  `).join('');
+}
+
+function submitComment(e) {
+  e.preventDefault();
+  const name = document.getElementById('cName').value.trim();
+  const text = document.getElementById('cText').value.trim();
+  if (!name || !text) return;
+  const list = getComments();
+  list.push({ name, text, stars: starVal||5, date: new Date().toLocaleDateString('ar-SA',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) });
+  saveComments(list);
+  renderComments();
+  document.getElementById('commentForm').reset();
+  resetStars();
+  document.getElementById('commentList').scrollIntoView({ behavior:'smooth' });
+}
+
+/* ── Stars ── */
+function initStars() {
+  document.querySelectorAll('.star').forEach(s => {
+    s.style.cursor = 'pointer';
+    s.addEventListener('click', () => { starVal = +s.dataset.v; updateStars(); });
+    s.addEventListener('mouseover', () => highlightStars(+s.dataset.v));
+    s.addEventListener('mouseout', updateStars);
+  });
+}
+function highlightStars(n) {
+  document.querySelectorAll('.star').forEach(s => s.textContent = +s.dataset.v <= n ? '★' : '☆');
+  document.querySelectorAll('.star').forEach(s => s.style.color = +s.dataset.v <= n ? '#ffc300' : '');
+}
+function updateStars() {
+  document.querySelectorAll('.star').forEach(s => {
+    const on = +s.dataset.v <= starVal;
+    s.textContent = on ? '★' : '☆';
+    s.style.color  = on ? '#ffc300' : '';
+  });
+}
+function resetStars() { starVal = 0; updateStars(); }
+
+/* ── Other games ── */
+function renderOtherGames() {
+  const others = GAMES.filter(g => g.id !== gameId).slice(0,4);
+  const CAT_LABELS = { action:'أكشن', adventure:'مغامرة', puzzle:'ألغاز', rpg:'RPG', sport:'رياضة', other:'أخرى' };
+  document.getElementById('otherGames').innerHTML = others.map(g => `
+    <div class="other-card" onclick="location.href='game.html?id=${g.id}'">
+      <img src="${g.image}" alt="${g.title}" onerror="this.src='https://picsum.photos/seed/${g.id}/600/400'" />
+      <div class="other-card-body">
+        <div class="other-card-title">${g.title}</div>
+        <div class="other-card-cat">${CAT_LABELS[g.category]||'أخرى'} · ${g.size}</div>
+      </div>
+    </div>
+  `).join('') || '<p style="color:var(--muted);font-size:.85rem">لا توجد ألعاب أخرى</p>';
+}
+
+/* ── Share ── */
+function shareGame(platform) {
+  const url  = encodeURIComponent(location.href);
+  const text = encodeURIComponent('تحقق من هذه اللعبة: ' + game.title);
+  if (platform === 'twitter')  window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`,'_blank');
+  if (platform === 'whatsapp') window.open(`https://wa.me/?text=${text}%20${url}`,'_blank');
+}
+function copyLink() {
+  navigator.clipboard.writeText(location.href).then(() => {
+    const btn = event.target; btn.textContent = '✅ تم النسخ!';
+    setTimeout(() => btn.textContent = '🔗 نسخ الرابط', 2000);
+  });
+}
+
+/* ── Lightbox ── */
+function openLightbox(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeLightbox(); });
+
+/* ── Helpers ── */
+function formatDate(d) {
+  return new Date(d).toLocaleDateString('ar-SA',{year:'numeric',month:'long',day:'numeric'});
+}
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

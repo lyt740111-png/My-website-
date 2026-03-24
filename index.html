@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">الرئيسية</title>
+  <meta name="description" id="page-desc" content="موقع الألعاب والتطبيقات" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- ► أضف كود AdSense هنا بعد الموافقة ◄
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+  -->
+
+  <style>
+    /* ── HERO ── */
+    .hero {
+      padding: 80px clamp(16px,5vw,80px) 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    @media(max-width:860px){ .hero { grid-template-columns:1fr; gap:30px; text-align:center; } }
+
+    .hero-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--border); border-radius: 50px;
+      padding: 5px 16px; font-family: var(--f-mono); font-size: .76rem;
+      color: var(--acc); margin-bottom: 20px;
+    }
+    .hero-label::before { content:'●'; font-size:.55rem; animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1}50%{opacity:.2} }
+
+    .hero-title {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 900; line-height: 1.1; margin-bottom: 18px;
+    }
+    .hero-title .hl {
+      background: linear-gradient(90deg, var(--acc), var(--acc2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-sub { color: var(--muted); font-size: 1rem; margin-bottom: 32px; max-width: 440px; }
+    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .featured-card {
+      position: relative; border-radius: var(--r2);
+      overflow: hidden; aspect-ratio: 16/10;
+      border: 1px solid var(--border);
+      box-shadow: var(--glow-g), var(--shadow);
+      cursor: pointer;
+    }
+    .featured-card img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .4s;
+    }
+    .featured-card:hover img { transform: scale(1.04); }
+    .featured-card .fc-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(6,10,15,.95) 0%, rgba(6,10,15,.1) 60%);
+    }
+    .featured-card .fc-info {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 24px;
+    }
+    .fc-badge {
+      display: inline-block; padding: 3px 12px;
+      background: var(--acc); color: var(--bg);
+      border-radius: 4px; font-size: .74rem; font-weight: 700;
+      margin-bottom: 8px; font-family: var(--f-mono);
+    }
+    .fc-title { font-size: 1.4rem; font-weight: 900; margin-bottom: 4px; }
+    .fc-desc  { color: rgba(221,232,245,.7); font-size: .86rem; margin-bottom: 14px; }
+
+    /* ── MAIN CONTENT ── */
+    .main-content { max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px,4vw,48px); }
+    .section { padding: 60px 0; }
+
+    /* ── GAMES GRID ── */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 22px;
+    }
+    .empty-state {
+      text-align: center; padding: 80px 20px; color: var(--muted);
+      grid-column: 1 / -1;
+    }
+    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+
+    /* ── TOP BANNER AD ── */
+    .top-ad { padding: 24px clamp(16px,4vw,48px) 0; max-width: 1200px; margin: 0 auto; }
+  </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- ░░░ NAVBAR ░░░ -->
+<nav class="navbar">
+  <div class="nav-logo" id="nav-logo">🎮 <span>Games</span></div>
+  <ul class="nav-center">
+    <li><a href="index.html" class="active">الرئيسية</a></li>
+    <li><a href="index.html#games">الألعاب</a></li>
+    <li><a href="admin.html">لوحة الإدارة</a></li>
+  </ul>
+  <div class="nav-right">
+    <a class="nav-icon" id="nav-tiktok" href="#" target="_blank" title="TikTok">📱</a>
+    <a class="nav-icon" id="nav-discord" href="#" target="_blank" title="Discord">💬</a>
+  </div>
+</nav>
+
+<!-- ░░░ HERO ░░░ -->
+<div class="page">
+  <section class="hero" id="heroSection">
+    <div>
+      <div class="hero-label">🎮 ألعاب جديدة كل أسبوع</div>
+      <h1 class="hero-title">
+        <span class="hl" id="hero-title-text">موقعي</span><br/>
+        للألعاب والتطبيقات
+      </h1>
+      <p class="hero-sub" id="hero-sub-text">العب وحمّل أحدث الألعاب والتطبيقات مجاناً</p>
+      <div class="hero-btns">
+        <a href="#games" class="btn btn-green">🎮 استعرض الألعاب</a>
+        <a href="#" id="hero-tiktok-btn" class="btn btn-outline" target="_blank">📱 تيك توك</a>
+      </div>
+    </div>
+    <div>
+      <div class="featured-card" id="featuredCard" onclick="">
+        <img id="featuredImg" src="https://picsum.photos/seed/hero/800/500" alt="لعبة مميزة" />
+        <div class="fc-overlay"></div>
+        <div class="fc-info">
+          <div class="fc-badge">⭐ مميز</div>
+          <div class="fc-title" id="featuredTitle">اللعبة المميزة</div>
+          <div class="fc-desc"  id="featuredDesc">وصف اللعبة المميزة</div>
+          <a class="btn btn-green" id="featuredBtn" href="#">تحميل اللعبة ⬇</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ░░░ AD BANNER 1 ░░░ -->
+  <div class="top-ad reveal">
+    <div class="ad-wrap">
+      <!--
+        ► استبدل بكود AdSense بعد الموافقة:
+        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXX"
+             data-ad-slot="XXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      -->
+      <div class="ad-placeholder">📢 مساحة إعلانية — Banner Ad (970×90)</div>
+    </div>
+  </div>
+
+  <!-- ░░░ GAMES SECTION ░░░ -->
+  <div class="main-content">
+    <section class="section" id="games">
+
+      <div class="sec-header reveal">
+        <span class="sec-tag">// الألعاب</span>
+        <h2 class="sec-title">جميع الألعاب</h2>
+        <div class="sec-line"></div>
+      </div>
+
+      <!-- SEARCH + FILTER -->
+      <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:30px" class="reveal">
+        <div class="search-bar" style="max-width:400px">
+          <span>🔍</span>
+          <input type="text" id="searchInput" placeholder="ابحث عن لعبة..." oninput="filterGames()" />
+        </div>
+        <div class="filter-bar" id="filterBar">
+          <button class="filter-btn active" data-cat="all" onclick="setFilter('all',this)">الكل</button>
+          <button class="filter-btn" data-cat="action"    onclick="setFilter('action',this)">⚔️ أكشن</button>
+          <button class="filter-btn" data-cat="adventure" onclick="setFilter('adventure',this)">🗺 مغامرة</button>
+          <button class="filter-btn" data-cat="puzzle"    onclick="setFilter('puzzle',this)">🧩 ألغاز</button>
+          <button class="filter-btn" data-cat="rpg"       onclick="setFilter('rpg',this)">🧙 RPG</button>
+          <button class="filter-btn" data-cat="sport"     onclick="setFilter('sport',this)">⚽ رياضة</button>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <span style="font-size:.82rem;color:var(--muted);font-family:var(--f-mono)">ترتيب:</span>
+          <select id="sortSelect" onchange="filterGames()"
+            style="background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:8px;font-size:.82rem;">
+            <option value="date">الأحدث أولاً</option>
+            <option value="title">الاسم أ-ي</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- GAMES GRID -->
+      <div class="games-grid" id="gamesGrid"></div>
+
+    </section>
+
+    <!-- ░░░ AD BANNER 2 ░░░ -->
+    <div class="reveal" style="margin-bottom:60px">
+      <div class="ad-wrap">
+        <!--
+          ► استبدل بكود AdSense:
+          <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXX"
+               data-ad-slot="XXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        -->
+        <div class="ad-placeholder">📢 مساحة إعلانية — Banner Ad 2 (728×90)</div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+
+  <!-- ░░░ FOOTER ░░░ -->
+  <footer class="site-footer">
+    <div class="footer-logo" id="footer-logo">🎮 Games</div>
+    <div class="footer-links">
+      <a href="index.html">الرئيسية</a>
+      <a href="admin.html">الإدارة</a>
+    </div>
+    <div class="footer-copy">© <span id="yr"></span> · جميع الحقوق محفوظة · <span id="site-name-footer">موقعي</span></div>
+  </footer>
+</div><!-- /page -->
+
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- ░══════════════════════════════════════════ -->
+<script src="games.js"></script>
+<script>
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', () => {
+  applyConfig();
+  renderFeatured();
+  filterGames();
+  initReveal();
+  window.addEventListener('scroll', () => {
+    document.getElementById('back-top').classList.toggle('show', window.scrollY > 400);
+  });
+  document.getElementById('yr').textContent = new Date().getFullYear();
+});
+
+/* ── Apply site config ── */
+function applyConfig() {
+  document.getElementById('page-title').textContent   = SITE.name + ' — الألعاب';
+  document.getElementById('hero-title-text').textContent = SITE.name;
+  document.getElementById('hero-sub-text').textContent   = SITE.description;
+  document.getElementById('nav-logo').innerHTML = SITE.logo + ' <span>' + SITE.name + '</span>';
+  document.getElementById('footer-logo').textContent = SITE.logo + ' ' + SITE.name;
+  document.getElementById('site-name-footer').textContent = SITE.name;
+  document.getElementById('nav-tiktok').href     = SITE.tiktok;
+  document.getElementById('nav-discord').href    = SITE.discord;
+  document.getElementById('hero-tiktok-btn').href = SITE.tiktok;
+}
+
+/* ── Featured game ── */
+function renderFeatured() {
+  const featured = GAMES.find(g => g.featured) || GAMES[0];
+  if (!featured) return;
+  document.getElementById('featuredImg').src    = featured.image;
+  document.getElementById('featuredImg').alt    = featured.title;
+  document.getElementById('featuredTitle').textContent = featured.title;
+  document.getElementById('featuredDesc').textContent  = featured.short_desc;
+  document.getElementById('featuredBtn').href    = 'game.html?id=' + featured.id;
+  document.getElementById('featuredCard').onclick = () => location.href = 'game.html?id=' + featured.id;
+}
+
+/* ── Filter & Sort ── */
+let currentCat = 'all';
+function setFilter(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterGames();
+}
+
+function filterGames() {
+  const q    = document.getElementById('searchInput').value.trim().toLowerCase();
+  const sort = document.getElementById('sortSelect').value;
+  let list = currentCat === 'all' ? [...GAMES] : GAMES.filter(g => g.category === currentCat);
+  if (q) list = list.filter(g => g.title.toLowerCase().includes(q) || g.short_desc.toLowerCase().includes(q));
+  if (sort === 'date')  list.sort((a,b) => new Date(b.date) - new Date(a.date));
+  if (sort === 'title') list.sort((a,b) => a.title.localeCompare(b.title,'ar'));
+  renderGrid(list);
+}
+
+/* ── Render cards ── */
+const CAT_LABELS = { action:'⚔️ أكشن', adventure:'🗺 مغامرة', puzzle:'🧩 ألغاز', rpg:'🧙 RPG', sport:'⚽ رياضة', other:'🎯 أخرى' };
+const PLAT_CLASS  = { PC:'tag-pc', Android:'tag-android', iOS:'tag-ios', Web:'tag-web' };
+
+function renderGrid(list) {
+  const grid = document.getElementById('gamesGrid');
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><p>لا توجد ألعاب بهذا الفلتر</p></div>`;
+    return;
+  }
+  grid.innerHTML = list.map(g => `
+    <div class="game-card reveal" onclick="location.href='game.html?id=${g.id}'" style="cursor:pointer">
+      <div class="card-img-wrap">
+        <img class="card-img" src="${g.image}" alt="${g.title}" loading="lazy"
+          onerror="this.src='https://picsum.photos/seed/${g.id}/600/400'" />
+      </div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="tag tag-${g.category}">${CAT_LABELS[g.category]||'🎯 أخرى'}</span>
+          ${g.platform.map(p=>`<span class="tag ${PLAT_CLASS[p]||'tag-other'}">${p}</span>`).join('')}
+        </div>
+        <div class="card-title">${g.title}</div>
+        <div class="card-desc">${g.short_desc}</div>
+        <div class="card-info">
+          <span>💾 ${g.size}</span>
+          <span>v${g.version}</span>
+          <span>📅 ${formatDate(g.date)}</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="game.html?id=${g.id}" class="btn btn-green" style="flex:1" onclick="event.stopPropagation()">تفاصيل واسطة تحميل</a>
+      </div>
+    </div>
+  `).join('');
+  initReveal();
+}
+
+function formatDate(d) {
+  return new Date(d).toLocaleDateString('ar-SA',{year:'numeric',month:'short',day:'numeric'});
+}
+
+/* ── Scroll reveal ── */
+function initReveal() {
+  const obs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); }), { threshold:.1 });
+  document.querySelectorAll('.reveal:not(.in)').forEach(el => obs.observe(el));
+}
+</script>
+</body>
+</html>

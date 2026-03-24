@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تحميل اللعبة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- ► أضف AdSense هنا
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX" crossorigin="anonymous"></script>
+  -->
+
+  <style>
+    .dl-page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 90px clamp(16px,4vw,40px) 80px;
+    }
+
+    /* ── GAME CARD MINI ── */
+    .game-mini {
+      display: flex; gap: 20px; align-items: center;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--r2); padding: 20px;
+      margin-bottom: 28px;
+    }
+    .game-mini img {
+      width: 100px; height: 64px; object-fit: cover;
+      border-radius: 8px; flex-shrink: 0;
+    }
+    .game-mini-info { flex: 1; }
+    .game-mini-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+    .game-mini-meta  { font-size: .78rem; color: var(--muted); font-family: var(--f-mono); }
+
+    /* ── COUNTDOWN BOX ── */
+    .countdown-box {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      padding: 40px 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .countdown-box::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--acc), var(--acc2));
+      transform-origin: left;
+      animation: none;
+    }
+    .countdown-box.running::before {
+      animation: progress var(--dur, 10s) linear forwards;
+    }
+    @keyframes progress { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+
+    .cd-icon { font-size: 2.5rem; margin-bottom: 14px; }
+    .cd-title { font-size: 1.3rem; font-weight: 900; margin-bottom: 8px; }
+    .cd-sub   { color: var(--muted); font-size: .9rem; margin-bottom: 30px; }
+
+    /* Ring countdown */
+    .ring-wrap { position: relative; display: inline-block; margin-bottom: 28px; }
+    .ring-wrap svg { transform: rotate(-90deg); }
+    .ring-bg    { fill: none; stroke: var(--bg3); stroke-width: 6; }
+    .ring-fill  {
+      fill: none; stroke: var(--acc); stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 251;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear, stroke .3s;
+    }
+    .ring-num {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--f-mono); font-size: 2.4rem; font-weight: 700;
+      color: var(--acc);
+    }
+
+    /* Download button states */
+    .dl-state { display: none; }
+    .dl-state.active { display: block; }
+
+    /* State 0: counting */
+    .state-counting .cd-waiting {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 50px; padding: 10px 24px;
+      color: var(--muted); font-size: .9rem;
+    }
+    .spinner {
+      width: 16px; height: 16px; border: 2px solid var(--border);
+      border-top-color: var(--acc); border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to{transform:rotate(360deg)} }
+
+    /* State 1: ready — first click goes to ad */
+    #btnReady {
+      display: none;
+      width: 100%; padding: 18px; border-radius: var(--r2);
+      font-size: 1.15rem; font-weight: 900; border: none; cursor: pointer;
+      background: linear-gradient(135deg, var(--acc), var(--acc2));
+      color: var(--bg);
+      box-shadow: 0 0 40px rgba(0,240,168,.35);
+      transition: .25s;
+    }
+    #btnReady:hover { transform: translateY(-3px); box-shadow: 0 0 60px rgba(0,240,168,.5); }
+
+    /* State 2: after ad click — real download */
+    #btnFinal {
+      display: none;
+      width: 100%; padding: 18px; border-radius: var(--r2);
+      font-size: 1.15rem; font-weight: 900; border: none; cursor: pointer;
+      background: linear-gradient(135deg, #00c88a, #0090cc);
+      color: #fff;
+      box-shadow: 0 0 40px rgba(0,200,138,.4);
+      transition: .25s;
+      animation: pulse-btn 1.5s ease-in-out infinite;
+    }
+    #btnFinal:hover { transform: translateY(-3px); }
+    @keyframes pulse-btn {
+      0%,100%{ box-shadow: 0 0 40px rgba(0,200,138,.4); }
+      50%    { box-shadow: 0 0 70px rgba(0,200,138,.7); }
+    }
+
+    .step-hint {
+      margin-top: 14px; font-size: .82rem; color: var(--muted);
+      font-family: var(--f-mono);
+    }
+    .step-hint span { color: var(--acc); }
+
+    /* ── STEPS ── */
+    .steps-row {
+      display: flex; align-items: center; justify-content: center; gap: 0;
+      margin-bottom: 30px;
+    }
+    .step-dot {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; font-weight: 800; font-family: var(--f-mono);
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--muted); flex-shrink: 0; transition: .3s;
+    }
+    .step-dot.done  { background: var(--acc);  color: var(--bg);   border-color: var(--acc); }
+    .step-dot.active { background: var(--acc2); color: var(--bg);   border-color: var(--acc2); }
+    .step-line {
+      flex: 1; height: 2px; background: var(--border); max-width: 60px;
+      transition: background .3s;
+    }
+    .step-line.done { background: var(--acc); }
+    .step-label {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .steps-labels {
+      display: flex; justify-content: space-around;
+      font-size: .72rem; color: var(--muted); margin-bottom: 28px;
+      font-family: var(--f-mono);
+    }
+    .steps-labels span.active { color: var(--acc2); }
+    .steps-labels span.done   { color: var(--acc); }
+
+    /* ── TIPS ── */
+    .tip-box {
+      background: rgba(0,240,168,.06); border: 1px solid rgba(0,240,168,.15);
+      border-radius: var(--r); padding: 16px 18px;
+      display: flex; gap: 12px; align-items: flex-start;
+      font-size: .85rem; color: var(--muted);
+      margin-top: 22px; text-align: right;
+    }
+    .tip-box .tip-icon { font-size: 1.2rem; flex-shrink: 0; }
+
+    /* ── BACK LINK ── */
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--muted); font-size: .84rem; margin-bottom: 20px;
+      transition: color .2s;
+    }
+    .back-link:hover { color: var(--acc); }
+  </style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo" id="nav-logo">🎮 <span>Games</span></div>
+  <ul class="nav-center">
+    <li><a href="index.html">الرئيسية</a></li>
+    <li><a href="index.html#games">الألعاب</a></li>
+  </ul>
+</nav>
+
+<div class="page">
+<div class="dl-page">
+
+  <a class="back-link reveal" id="backLink" href="#">← العودة لصفحة اللعبة</a>
+
+  <!-- AD BANNER TOP -->
+  <div class="ad-wrap reveal" style="margin-bottom:26px">
+    <!--
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXX"
+           data-ad-slot="XXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    -->
+    <div class="ad-placeholder">📢 إعلان — Banner Ad (970×90)</div>
+  </div>
+
+  <!-- GAME MINI INFO -->
+  <div class="game-mini reveal">
+    <img id="miniImg" src="" alt="غلاف" onerror="this.style.display='none'" />
+    <div class="game-mini-info">
+      <div class="game-mini-title" id="miniTitle">...</div>
+      <div class="game-mini-meta"  id="miniMeta">...</div>
+    </div>
+  </div>
+
+  <!-- COUNTDOWN BOX -->
+  <div class="countdown-box" id="cdBox">
+
+    <!-- STEPS INDICATOR -->
+    <div class="steps-row">
+      <div class="step-dot active" id="step1">1</div>
+      <div class="step-line" id="line1"></div>
+      <div class="step-dot" id="step2">2</div>
+      <div class="step-line" id="line2"></div>
+      <div class="step-dot" id="step3">3</div>
+    </div>
+    <div class="steps-labels">
+      <span id="slabel1" class="active">انتظار</span>
+      <span id="slabel2">تأكيد</span>
+      <span id="slabel3">تحميل</span>
+    </div>
+
+    <!-- PHASE 0: COUNTING DOWN -->
+    <div id="phase0">
+      <div class="cd-icon">⏳</div>
+      <div class="cd-title">يتم إعداد رابط التحميل...</div>
+      <div class="cd-sub">انتظر ثوانٍ قليلة من فضلك</div>
+
+      <div class="ring-wrap">
+        <svg width="90" height="90" viewBox="0 0 90 90">
+          <circle class="ring-bg"   cx="45" cy="45" r="40"/>
+          <circle class="ring-fill" cx="45" cy="45" r="40" id="ringFill"/>
+        </svg>
+        <div class="ring-num" id="ringNum">10</div>
+      </div>
+
+      <div>
+        <span class="cd-waiting">
+          <div class="spinner"></div>
+          جارٍ التحضير...
+        </span>
+      </div>
+    </div>
+
+    <!-- PHASE 1: FIRST CLICK (goes to ad) -->
+    <div id="phase1" style="display:none">
+      <div class="cd-icon">🎉</div>
+      <div class="cd-title">الرابط جاهز!</div>
+      <div class="cd-sub">اضغط الزر للمتابعة</div>
+      <button id="btnReady" onclick="clickAd()">
+        🔓 متابعة للتحميل
+      </button>
+      <p class="step-hint">الخطوة <span>1 / 2</span> — اضغط للمتابعة</p>
+    </div>
+
+    <!-- PHASE 2: SECOND CLICK (real download) -->
+    <div id="phase2" style="display:none">
+      <div class="cd-icon">✅</div>
+      <div class="cd-title">رابط التحميل المباشر جاهز!</div>
+      <div class="cd-sub">اضغط الزر أدناه لبدء التحميل من MediaFire / Drive</div>
+      <button id="btnFinal" onclick="startDownload()">
+        ⬇ تحميل اللعبة الآن
+      </button>
+      <p class="step-hint">الخطوة <span>2 / 2</span> — الرابط المباشر</p>
+    </div>
+
+    <!-- TIP -->
+    <div class="tip-box">
+      <span class="tip-icon">💡</span>
+      <span>إذا لم يبدأ التحميل تلقائياً، اضغط الزر مرة أخرى. تأكد من السماح بالنوافذ المنبثقة في متصفحك.</span>
+    </div>
+  </div>
+
+  <!-- AD BANNER BOTTOM -->
+  <div class="ad-wrap reveal" style="margin-top:26px">
+    <!--
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXX"
+           data-ad-slot="XXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    -->
+    <div class="ad-placeholder">📢 إعلان — Banner Ad 2 (728×90)</div>
+  </div>
+
+</div><!-- /dl-page -->
+
+<footer class="site-footer">
+  <div class="footer-logo" id="footer-logo">🎮</div>
+  <div class="footer-copy">© <span id="yr"></span> · <span id="site-name-footer"></span></div>
+</footer>
+</div><!-- /page -->
+
+<script src="games.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const gameId = params.get('id');
+let game     = null;
+let phase    = 0;          // 0=counting  1=ready(ad click)  2=final download
+const COUNTDOWN = 10;      // ← عدد الثواني
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  document.getElementById('nav-logo').innerHTML  = SITE.logo + ' <span>' + SITE.name + '</span>';
+  document.getElementById('footer-logo').textContent = SITE.logo + ' ' + SITE.name;
+  document.getElementById('site-name-footer').textContent = SITE.name;
+
+  game = getGame(gameId);
+  if (!game) {
+    document.body.innerHTML = '<div style="text-align:center;padding:100px 20px;color:#6a7f98"><h2>❌ اللعبة غير موجودة</h2><a href="index.html" style="color:#00f0a8">← العودة</a></div>';
+    return;
+  }
+
+  document.getElementById('backLink').href = 'game.html?id=' + game.id;
+  document.getElementById('miniImg').src   = game.image;
+  document.getElementById('miniTitle').textContent = game.title;
+  document.getElementById('miniMeta').textContent  = '💾 ' + game.size + '  ·  v' + game.version + '  ·  ' + game.platform.join(' / ');
+
+  startCountdown();
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); }), {threshold:.1});
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+});
+
+/* ── COUNTDOWN ── */
+function startCountdown() {
+  const ring    = document.getElementById('ringFill');
+  const numEl   = document.getElementById('ringNum');
+  const cdBox   = document.getElementById('cdBox');
+  const circumf = 251; // 2π × 40
+  let   left    = COUNTDOWN;
+
+  // Set CSS var for progress bar animation duration
+  cdBox.style.setProperty('--dur', COUNTDOWN + 's');
+  cdBox.classList.add('running');
+
+  numEl.textContent        = left;
+  ring.style.strokeDashoffset = 0;
+
+  const tick = setInterval(() => {
+    left--;
+    numEl.textContent = left;
+    ring.style.strokeDashoffset = circumf * (1 - left / COUNTDOWN);
+
+    // Color shifts as time runs out
+    if (left <= 3) ring.style.stroke = '#ff4d6d';
+    else if (left <= 5) ring.style.stroke = '#ffc300';
+
+    if (left <= 0) {
+      clearInterval(tick);
+      showPhase1();
+    }
+  }, 1000);
+}
+
+/* ── PHASE 1: show download button (first click = ad) ── */
+function showPhase1() {
+  document.getElementById('phase0').style.display = 'none';
+  document.getElementById('phase1').style.display = 'block';
+  document.getElementById('btnReady').style.display = 'block';
+
+  // Step indicator
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById('step1').classList.add('done');
+  document.getElementById('step1').textContent = '✓';
+  document.getElementById('line1').classList.add('done');
+  document.getElementById('step2').classList.add('active');
+  document.getElementById('slabel1').classList.remove('active'); document.getElementById('slabel1').classList.add('done');
+  document.getElementById('slabel2').classList.add('active');
+}
+
+/* ── CLICK AD: open ad link, then show final download ── */
+function clickAd() {
+  // If there's an ad link, open it in new tab
+  if (game.ad_link && game.ad_link.trim() !== '') {
+    window.open(game.ad_link, '_blank');
+  }
+
+  // Show final download button immediately (user returns to this tab)
+  document.getElementById('phase1').style.display = 'none';
+  document.getElementById('phase2').style.display = 'block';
+  document.getElementById('btnFinal').style.display = 'block';
+
+  // Step indicator
+  document.getElementById('step2').classList.remove('active');
+  document.getElementById('step2').classList.add('done');
+  document.getElementById('step2').textContent = '✓';
+  document.getElementById('line2').classList.add('done');
+  document.getElementById('step3').classList.add('active');
+  document.getElementById('slabel2').classList.remove('active'); document.getElementById('slabel2').classList.add('done');
+  document.getElementById('slabel3').classList.add('active');
+}
+
+/* ── FINAL DOWNLOAD: go to MediaFire / Drive ── */
+function startDownload() {
+  if (!game.download_link || game.download_link.trim() === '') {
+    alert('⚠️ رابط التحميل غير متوفر حالياً. تواصل مع صاحب الموقع.');
+    return;
+  }
+
+  // Mark step 3 done
+  document.getElementById('step3').classList.remove('active');
+  document.getElementById('step3').classList.add('done');
+  document.getElementById('step3').textContent = '✓';
+  document.getElementById('slabel3').classList.remove('active'); document.getElementById('slabel3').classList.add('done');
+
+  // Update button
+  const btn = document.getElementById('btnFinal');
+  btn.textContent = '✅ جاري فتح رابط التحميل...';
+  btn.disabled = true;
+
+  // Open download link
+  window.open(game.download_link, '_blank');
+
+  // Re-enable after 3s in case they want to click again
+  setTimeout(() => {
+    btn.textContent = '⬇ إعادة فتح رابط التحميل';
+    btn.disabled = false;
+  }, 3000);
+}
+</script>
+</body>
+</html>
