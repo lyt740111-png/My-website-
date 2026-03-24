@@ -6,14 +6,11 @@
  */
 
 const SITE = {
-  name:        "اسم موقعك",
+  name:        "hero mod",
   tagline:     "ألعابي وتطبيقاتي",
   description: "موقعي الشخصي لمشاركة ألعابي وتطبيقاتي مع الجميع",
   logo:        "🎮",
-  tiktok:      "https://www.tiktok.com/@USERNAME",
-  youtube:     "https://youtube.com/@USERNAME",
-  discord:     "https://discord.gg/XXXXXX",
-  twitter:     "https://twitter.com/USERNAME",
+  tiktok:      "https://www.tiktok.com/@qasasalmajhool
   // ─── AdSense / إعلانات ───
   adsense_client: "ca-pub-XXXXXXXXXXXXXXXX",   // ← أضف ID حسابك في AdSense هنا
   ad_slot_banner1: "XXXXXXXXXX",               // ← رقم وحدة الإعلان 1
