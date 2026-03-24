@@ -162,9 +162,7 @@
     <input type="password" id="pwInput" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter')tryLogin()" />
     <div class="login-err" id="loginErr">❌ كلمة مرور خاطئة</div>
     <button class="btn btn-green btn-full" onclick="tryLogin()">دخول →</button>
-    <p style="margin-top:16px;font-size:.76rem;color:var(--muted)">
-      كلمة المرور الافتراضية: <code style="color:var(--acc)">admin123</code><br/>
-      غيّرها في ملف admin.html
+    <p style="margin-top:16px;font-size:.76rem;color:var(--muted)"> <code style="color:var(--acc)"></code><br/>
     </p>
   </div>
 </div>
@@ -616,7 +614,7 @@ function renderGamesList() {
         <a href="download.html?id=${g.id}" class="btn btn-outline" style="font-size:.78rem;padding:7px 14px" target="_blank">⬇ تحميل</a>
       </div>
     </div>
-  `).join('') : '<p style="color:var(--muted);text-align:center;padding:30px">لا توجد ألعاب في games.js بعد</p>';
+  `).join('') : '<p style="color:var(--muted);text-align:center;padding:30px">.</p>';
 }
 
 /* ── CONFIG CODE ── */
